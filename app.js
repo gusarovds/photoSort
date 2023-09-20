@@ -1,10 +1,22 @@
-const folderPath = '../../Camera';
+const rlp = require('readline');
+
+const rl = rlp.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
+
+function askDir() {
+  return new Promise(resolve => {
+    rl.question('Enter photo folder: ', input => resolve(input));
+  });
+}
+
 const copyPath = 'Photos'
 const fs = require('fs/promises');
 const fsSync = require('fs');
 
-const getFiles = async () => {
-  return await fs.readdir(folderPath)
+const getFiles = async (dir) => {
+  return await fs.readdir(dir)
 }
 
 const parsePath = (path) => {
@@ -37,8 +49,12 @@ const makeDir = async (fileObj) => {
 }
 
 const copyFiles = async (dir) => {
+  const folderPath = await askDir()
+  rl.close()
+
   !fsSync.existsSync(copyPath) && await fs.mkdir(copyPath);
-  const files = await getFiles(dir)
+
+  const files = await getFiles(folderPath)
 
   files.forEach(async (path) => {
     const fileObj = parsePath(path)
